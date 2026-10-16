@@ -28,3 +28,4 @@ indent-style = "space"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["slow: tests that take more than ~2 s (deselect with -m 'not slow')"]
