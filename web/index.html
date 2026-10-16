@@ -314,6 +314,12 @@ select {
 .meter { flex: 1; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
 .meter > span { display: block; height: 100%; background: var(--accent); transition: width 0.25s ease; }
 .count-line { font-size: 13px; color: var(--muted); margin: 0; font-variant-numeric: tabular-nums; }
+.browser { display: grid; gap: 6px; }
+.browse-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.browse-row .btn { padding: 4px 12px; font-size: 18px; line-height: 1.2; }
+.browse-label { margin: 0; font-family: var(--font-mono); font-size: 13px; text-align: center; font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; min-width: 0; accent-color: var(--accent); }
+input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .help { font-size: 13px; color: var(--muted); margin: 0; }
 .help p { margin: 0 0 6px; }
 
@@ -398,6 +404,14 @@ select {
                 <p class="eyebrow" data-i18n="solutionsHeading"></p>
                 <button class="btn" id="count" type="button" data-i18n="count"></button>
                 <p class="count-line" id="count-line"></p>
+                <div class="browser" id="browser" hidden>
+                    <div class="browse-row">
+                        <button class="btn" id="sol-prev" type="button">‹</button>
+                        <input type="range" id="sol-range" min="1" max="1" value="1">
+                        <button class="btn" id="sol-next" type="button">›</button>
+                    </div>
+                    <p class="browse-label" id="sol-label"></p>
+                </div>
             </div>
 
             <div class="group help">
@@ -444,10 +458,15 @@ const I18N = {
         solve: "Solve",
         clear: "Clear",
         solutionsHeading: "Solutions",
-        count: "Count solutions for this date",
+        count: "Find all solutions",
         countDefault: "Every month, day and weekday combination has at least one solution.",
-        counting: (d) => `Counting solutions for ${d}…`,
-        counted: (d, n, ms) => `${d} has ${n} solutions (counted in ${ms} ms).`,
+        counting: (d) => `Finding all solutions for ${d}…`,
+        counted: (d, n, ms) => `${d} has ${n} solutions (found in ${ms} ms).`,
+        solutionLabel: (k, n) => `Solution ${k} / ${n}`,
+        showing: (k, n) => `Showing solution ${k} of ${n}.`,
+        prevSolution: "Previous solution",
+        nextSolution: "Next solution",
+        browseSolutions: "Browse solutions",
         howTo: "How to play",
         help1: "Pick a piece below, then click the board. The highlighted cell sits under the piece's centre.",
         help2: "Click a placed piece to pick it up again. Hint places one piece that still leads to a solution.",
@@ -486,10 +505,15 @@ const I18N = {
         solve: "Vyřešit",
         clear: "Vyčistit",
         solutionsHeading: "Řešení",
-        count: "Spočítat řešení pro toto datum",
+        count: "Najít všechna řešení",
         countDefault: "Každá kombinace měsíce, dne a dne v týdnu má alespoň jedno řešení.",
-        counting: (d) => `Počítám řešení pro ${d}…`,
-        counted: (d, n, ms) => `${d}: ${n} řešení (spočteno za ${ms} ms).`,
+        counting: (d) => `Hledám všechna řešení pro ${d}…`,
+        counted: (d, n, ms) => `${d}: ${n} řešení (nalezeno za ${ms} ms).`,
+        solutionLabel: (k, n) => `Řešení ${k} / ${n}`,
+        showing: (k, n) => `Zobrazeno řešení ${k} z ${n}.`,
+        prevSolution: "Předchozí řešení",
+        nextSolution: "Další řešení",
+        browseSolutions: "Procházet řešení",
         howTo: "Jak hrát",
         help1: "Vyber dílek dole a klikni na desku. Zvýrazněné pole leží pod středem dílku.",
         help2: "Kliknutím na položený dílek ho zase zvedneš. Nápověda položí jeden dílek, se kterým se dá hra dokončit.",
@@ -602,7 +626,7 @@ NAMES.forEach((name, p) => {
     }
 });
 
-function runSolver(blocked, usedNames, limit) {
+function runSolver(blocked, usedNames, limit, collect) {
     const filled = new Uint8Array(N);
     blocked.forEach((i) => { filled[i] = 1; });
     const used = new Uint8Array(NAMES.length);
@@ -612,6 +636,7 @@ function runSolver(blocked, usedNames, limit) {
     const chosen = [];
     let first = null;
     let count = 0;
+    const all = [];
 
     function regionsOk() {
         seen.fill(0);
@@ -638,6 +663,7 @@ function runSolver(blocked, usedNames, limit) {
         if (e === N) {
             count++;
             if (!first) first = chosen.slice();
+            if (collect) all.push(chosen.slice());
             return count >= limit;
         }
         for (const pl of byMin[e]) {
@@ -655,10 +681,8 @@ function runSolver(blocked, usedNames, limit) {
         return false;
     }
     if (regionsOk()) search();
-    return {
-        first: first ? first.map((pl) => ({ name: NAMES[pl.p], cells: pl.cells.map((i) => playable[i]) })) : null,
-        count,
-    };
+    const decode = (sol) => sol.map((pl) => ({ name: NAMES[pl.p], cells: pl.cells.map((i) => playable[i]) }));
+    return { first: first ? decode(first) : null, count, all: all.map(decode) };
 }
 
 const state = {
@@ -674,6 +698,7 @@ const state = {
     message: null,
     tone: "",
     count: null,
+    browse: null,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -819,6 +844,18 @@ function renderPanel() {
         : c.pending
             ? t().counting(targetText())
             : t().counted(targetText(), c.n, c.ms);
+    const b = state.browse;
+    $("browser").hidden = !b || b.solutions.length === 0;
+    if (b && b.solutions.length) {
+        const range = $("sol-range");
+        range.max = String(b.solutions.length);
+        range.value = String(b.index + 1);
+        range.setAttribute("aria-label", t().browseSolutions);
+        range.setAttribute("aria-valuetext", t().solutionLabel(b.index + 1, b.solutions.length));
+        $("sol-label").textContent = t().solutionLabel(b.index + 1, b.solutions.length);
+        $("sol-prev").setAttribute("aria-label", t().prevSolution);
+        $("sol-next").setAttribute("aria-label", t().nextSolution);
+    }
     $("hint").disabled = isSolved();
     $("solve").disabled = isSolved();
 }
@@ -936,7 +973,7 @@ $("flip").addEventListener("click", flip);
 $("drop").addEventListener("click", drop);
 
 document.addEventListener("keydown", (ev) => {
-    if (ev.target.closest && ev.target.closest("select")) return;
+    if (ev.target.closest && ev.target.closest("select, input")) return;
     if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
     const k = ev.key.toLowerCase();
     if (k === "r") rotate();
@@ -998,17 +1035,35 @@ $("count").addEventListener("click", () => {
     setTimeout(() => {
         const t0 = performance.now();
         const blocked = targets().map(([r, c]) => idxOf[r * COLS + c]);
-        const { count } = runSolver(blocked, [], Infinity);
+        const { count, all } = runSolver(blocked, [], Infinity, true);
         state.count = { n: count, ms: Math.round(performance.now() - t0) };
-        renderPanel();
+        state.browse = { solutions: all, index: 0 };
+        showSolution(0);
     }, 30);
 });
+
+function showSolution(index) {
+    const b = state.browse;
+    if (!b || !b.solutions.length) return;
+    const n = b.solutions.length;
+    b.index = ((index % n) + n) % n;
+    state.placed.clear();
+    b.solutions[b.index].forEach(({ name, cells }) => state.placed.set(name, cells));
+    state.selected = null;
+    state.flashName = null;
+    say(() => t().showing(b.index + 1, n), "good");
+    render();
+}
+$("sol-range").addEventListener("input", (ev) => showSolution(Number(ev.target.value) - 1));
+$("sol-prev").addEventListener("click", () => showSolution(state.browse.index - 1));
+$("sol-next").addEventListener("click", () => showSolution(state.browse.index + 1));
 
 function setTarget(month, day, weekday) {
     state.month = month;
     state.day = day;
     state.weekday = weekday;
     state.count = null;
+    state.browse = null;
     const tg = targets();
     const removed = [];
     state.placed.forEach((cells, name) => {
