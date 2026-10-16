@@ -55,11 +55,7 @@ async function open(browser, opts, lang) {
     await c.page.evaluate(() => { solveAll(); });
     await c.page.screenshot({ path: `${out}/mobile-en.png` });
 
-    const d = await open(browser, { viewport: { width: 1000, height: 700 }, deviceScaleFactor: 2, colorScheme: "light" }, "en");
-    await d.page.evaluate(() => solveAll());
-    await d.page.locator("#frame").screenshot({ path: `${out}/board-en.png` });
-
     const overflow = await c.page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
-    console.log("errors:", [...a.errors, ...b.errors, ...c.errors, ...d.errors], "mobile overflow:", overflow);
+    console.log("errors:", [...a.errors, ...b.errors, ...c.errors], "mobile overflow:", overflow);
     await browser.close();
 })();
