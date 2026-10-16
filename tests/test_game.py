@@ -6,24 +6,45 @@ import plotly.graph_objects as go
 import pytest
 
 from apad.board import PLAYABLE, target_cells
-from apad.game import GameState, execute, format_orientations, parse_targets, run_repl
+from apad.game import (
+    NO_SOLUTION,
+    GameState,
+    execute,
+    format_orientations,
+    parse_targets,
+    run_repl,
+)
 from apad.pieces import PIECES, orientations
 from apad.plot import PIECE_COLORS, TARGET_COLOR, board_figure
 
 TARGETS = target_cells(11, 16, 4)
 
-SOLUTION: Dict[str, Tuple[int, int, int]] = {
-    "F": (0, 0, 0),
-    "P": (1, 0, 2),
-    "N": (2, 0, 5),
-    "T": (0, 0, 6),
-    "I": (1, 1, 0),
-    "L": (6, 1, 7),
-    "Z": (1, 2, 2),
-    "V": (1, 2, 3),
-    "U": (0, 4, 1),
-    "Y": (7, 4, 4),
-}
+SOLUTION_GRID: List[str] = [
+    "FFPPPNTTT",
+    "IFFPPNNTL",
+    "IFZVVVNTL",
+    "I.ZZZVN.L",
+    "IUUUZVYLL",
+    "IU.UYYYY ",
+]
+
+
+def _moves_from_grid(grid: List[str]) -> Dict[str, Tuple[int, int, int]]:
+    cells: Dict[str, List[Tuple[int, int]]] = {}
+    for r, line in enumerate(grid):
+        for c, name in enumerate(line):
+            if name in PIECES:
+                cells.setdefault(name, []).append((r, c))
+    moves = {}
+    for name, shape in cells.items():
+        row = min(r for r, _ in shape)
+        col = min(c for _, c in shape)
+        normalized = frozenset((r - row, c - col) for r, c in shape)
+        moves[name] = (orientations(name).index(normalized), row, col)
+    return moves
+
+
+SOLUTION: Dict[str, Tuple[int, int, int]] = _moves_from_grid(SOLUTION_GRID)
 
 
 @pytest.fixture
@@ -253,3 +274,39 @@ def test_board_figure_solved(solved_state: GameState) -> None:
     fills = {s.fillcolor for s in figure.layout.shapes}
     assert fills == set(PIECE_COLORS.values()) | {TARGET_COLOR}
     assert len(set(PIECE_COLORS.values())) == len(PIECES)
+
+
+def test_hint_move_keeps_puzzle_solvable(state: GameState) -> None:
+    """Hint suggests a legal move after which the puzzle can still be completed."""
+    output, done = execute(state, "hint")
+    assert not done
+    assert output.startswith("Try: place ")
+    execute(state, output.removeprefix("Try: "))
+    assert len(state.placements) == 1
+    execute(state, "solve")
+    assert state.is_solved()
+
+
+def test_solve_completes_partial_position(state: GameState) -> None:
+    """Solve keeps the pieces already placed and fills in the rest."""
+    for name in ("F", "P", "T"):
+        state.place(name, *SOLUTION[name])
+    fixed = state.placements
+    output, _ = execute(state, "solve")
+    assert "Congratulations" in output
+    assert all(state.placements[name] == shape for name, shape in fixed.items())
+
+
+def test_hint_and_solve_dead_position(state: GameState) -> None:
+    """A position that isolates a cell reports no solution and leaves the board unchanged."""
+    cup = frozenset({(0, 0), (0, 2), (1, 0), (1, 1), (1, 2)})
+    state.place("U", orientations("U").index(cup), 0, 0)
+    assert execute(state, "hint") == (NO_SOLUTION, False)
+    assert execute(state, "solve") == (NO_SOLUTION, False)
+    assert list(state.placements) == ["U"]
+
+
+def test_hint_when_solved(solved_state: GameState) -> None:
+    """Hint on a solved board raises."""
+    with pytest.raises(ValueError, match="already solved"):
+        execute(solved_state, "hint")

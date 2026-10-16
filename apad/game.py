@@ -16,6 +16,7 @@ from apad.board import (
 )
 from apad.pieces import PIECES, orientations
 from apad.plot import board_figure
+from apad.solver import solve_partial
 
 HELP = """Commands:
   show                          print the board
@@ -25,8 +26,12 @@ HELP = """Commands:
   remove NAME                   take a piece off the board
   reset                         clear the board
   plot [FILE.html]              open the board in a browser, or write it to an HTML file
+  hint                          suggest the next move that still leads to a solution
+  solve                         complete the board from the current position
   help                          show this help
   quit                          leave the game"""
+
+NO_SOLUTION = "No solution from this position; remove some pieces and try again."
 
 Handler = Callable[["GameState", List[str]], str]
 
@@ -217,6 +222,30 @@ def _cmd_help(state: GameState, args: List[str]) -> str:
     return HELP
 
 
+def _cmd_hint(state: GameState, args: List[str]) -> str:
+    _expect_args("hint", args, 0)
+    completion = _completion(state)
+    if completion is None:
+        return NO_SOLUTION
+    name = min(
+        (name for name in completion if name not in state.placements),
+        key=lambda name: min(completion[name]),
+    )
+    orientation, row, col = _move_for(name, completion[name])
+    return f"Try: place {name} {orientation} {row} {col}"
+
+
+def _cmd_solve(state: GameState, args: List[str]) -> str:
+    _expect_args("solve", args, 0)
+    completion = _completion(state)
+    if completion is None:
+        return NO_SOLUTION
+    for name, shape in completion.items():
+        if name not in state.placements:
+            state.place(name, *_move_for(name, shape))
+    return _board_after_move(state)
+
+
 COMMANDS: Dict[str, Handler] = {
     "show": _cmd_show,
     "pieces": _cmd_pieces,
@@ -225,6 +254,8 @@ COMMANDS: Dict[str, Handler] = {
     "reset": _cmd_reset,
     "plot": _cmd_plot,
     "help": _cmd_help,
+    "hint": _cmd_hint,
+    "solve": _cmd_solve,
 }
 
 
@@ -233,6 +264,21 @@ def _board_after_move(state: GameState) -> str:
     if state.is_solved():
         return f"{board}\n\nCongratulations, the puzzle is solved for {_target_text(state)}!"
     return f"{board}\nRemaining: {' '.join(state.remaining_pieces()) or '-'}"
+
+
+def _completion(state: GameState) -> Union[Placements, None]:
+    if state.is_solved():
+        msg = "the puzzle is already solved"
+        raise ValueError(msg)
+    solutions = solve_partial(state.targets, state.placements, limit=1)
+    return solutions[0] if solutions else None
+
+
+def _move_for(name: str, shape: Shape) -> Tuple[int, int, int]:
+    row = min(r for r, _ in shape)
+    col = min(c for _, c in shape)
+    normalized = frozenset((r - row, c - col) for r, c in shape)
+    return orientations(name).index(normalized), row, col
 
 
 def _expect_args(usage: str, args: List[str], count: int) -> None:
