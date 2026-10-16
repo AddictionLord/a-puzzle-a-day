@@ -49,6 +49,7 @@ async function open(browser, opts, lang) {
     await b.page.evaluate(() => solveAll());
     await b.page.click("#count");
     await b.page.waitForFunction(() => state.count && !state.count.pending);
+    await b.page.evaluate(() => showSolution(41));
     await b.page.screenshot({ path: `${out}/solved-cs-dark.png`, fullPage: true });
 
     const c = await open(browser, { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, colorScheme: "light", isMobile: true, hasTouch: true }, "en");

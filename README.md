@@ -47,7 +47,8 @@ loads its fonts from Google Fonts.
 - **Hint** (`H`) places one piece that still leads to a full solution, or tells you the current position
   is a dead end.
 - **Solve** completes the board from wherever you are, keeping your pieces.
-- **Count solutions** enumerates every solution for the chosen date in about half a second.
+- **Find all solutions** enumerates every solution for the chosen date in about half a second. A
+  slider (or ‹ ›) then steps through them on the board.
 - **EN / CS** switches the board labels and the interface. The choice is remembered; `index.html#cs` and
   `index.html#en` open a specific language.
 
