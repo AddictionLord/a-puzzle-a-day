@@ -1,7 +1,5 @@
 # A-Puzzle-A-Day
 
-[![CI](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/ci.yml/badge.svg)](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/ci.yml)
-
 A game and solver for a wooden calendar puzzle. Ten pentominoes go on a 6 × 9 board so that exactly three
 cells stay visible: today's **month**, **day** and **weekday**. There is a puzzle for every day of the year,
 and every one of them has a solution.
