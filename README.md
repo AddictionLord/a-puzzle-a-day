@@ -31,3 +31,16 @@ every = solve(targets, limit=None)
 count_solutions(targets)
 solve_partial(targets, {"I": first[0]["I"]}, limit=1)
 ```
+
+## Play
+
+```bash
+python -m apad.game                                  # today's date
+python -m apad.game --date 2026-10-16
+python -m apad.game --month 11 --day 16 --weekday 4  # LIS 16 Pá (Monday = 0)
+```
+
+Commands: `show`, `pieces [NAME ...]` (orientations with their indices), `place F 3 2 4`
+(piece, orientation index, row and column of the drawing's top-left corner), `remove F`, `reset`,
+`plot [out.html]` (plotly board in the browser or written to HTML), `hint` (next move that still
+leads to a solution), `solve` (complete the board from the current position), `help`, `quit`.
