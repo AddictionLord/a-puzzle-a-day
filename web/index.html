@@ -1,0 +1,1048 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A-Puzzle-A-Day</title>
+<meta name="description" content="Calendar pentomino puzzle: place ten pieces so only today's month, day and weekday stay visible. Play, get a hint or let the solver finish.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 3'%3E%3Crect width='3' height='3' rx='.4' fill='%23d4b07c'/%3E%3Cpath d='M0 0h2v1H1v2H0z' fill='%235a8eaa'/%3E%3Cpath d='M2 0h1v3H1V2h1z' fill='%23c97a42'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: the plywood board is the hero; a narrow workbench column holds date, actions and status; the piece tray sits under the board. */
+:root {
+    --bg: #e7ebe6;
+    --surface: #f6f7f3;
+    --ink: #1f2420;
+    --muted: #5f675f;
+    --line: #c9d0c6;
+    --frame: #d4b07c;
+    --insert: #f3ece0;
+    --engrave: #7b4a21;
+    --frame-text: #5f3816;
+    --accent: #2c6b5e;
+    --accent-soft: rgba(44, 107, 94, 0.14);
+    --accent-ink: #ffffff;
+    --danger: #b0402c;
+    --shadow: rgba(40, 28, 12, 0.28);
+    --font-display: "Jost", "Futura", "Century Gothic", system-ui, sans-serif;
+    --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #141816;
+        --surface: #1d2220;
+        --ink: #e9ece6;
+        --muted: #9aa39a;
+        --line: #333b37;
+        --frame: #8f6d45;
+        --insert: #2b2721;
+        --engrave: #e3b47c;
+        --frame-text: #f1d3a8;
+        --accent: #72c4af;
+        --accent-soft: rgba(114, 196, 175, 0.18);
+        --accent-ink: #0f1c18;
+        --danger: #e57a63;
+        --shadow: rgba(0, 0, 0, 0.55);
+        color-scheme: dark;
+    }
+}
+:root[data-theme="dark"] {
+    --bg: #141816;
+    --surface: #1d2220;
+    --ink: #e9ece6;
+    --muted: #9aa39a;
+    --line: #333b37;
+    --frame: #8f6d45;
+    --insert: #2b2721;
+    --engrave: #e3b47c;
+    --frame-text: #f1d3a8;
+    --accent: #72c4af;
+    --accent-soft: rgba(114, 196, 175, 0.18);
+    --accent-ink: #0f1c18;
+    --danger: #e57a63;
+    --shadow: rgba(0, 0, 0, 0.55);
+    color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+:root {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+}
+[hidden] { display: none !important; }
+.page {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding-block: 28px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: grid;
+    gap: 24px;
+}
+header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 24px;
+}
+.title-block { display: grid; gap: 4px; min-width: 0; }
+h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(28px, 4.4vw, 42px);
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+    margin: 0;
+    text-wrap: balance;
+}
+.tagline { margin: 0; color: var(--muted); max-width: 58ch; }
+.lang {
+    display: inline-flex;
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    padding: 3px;
+    background: var(--surface);
+}
+.lang button {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    padding: 4px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+.lang button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+.layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 24px;
+    align-items: start;
+}
+@media (max-width: 880px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+}
+.play { display: grid; gap: 18px; min-width: 0; }
+
+.frame {
+    background:
+        repeating-linear-gradient(97deg, rgba(255, 255, 255, 0.07) 0 2px, transparent 2px 9px),
+        repeating-linear-gradient(93deg, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 23px),
+        var(--frame);
+    border-radius: 22px;
+    padding: clamp(12px, 3vw, 26px) clamp(12px, 3vw, 26px) 10px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 14px 30px -14px var(--shadow);
+    transition: box-shadow 0.4s ease;
+}
+.frame.solved { box-shadow: 0 0 0 3px var(--accent), 0 14px 30px -14px var(--shadow); }
+.board-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    touch-action: manipulation;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.engraving {
+    margin: 8px 0 0;
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(11px, 1.8vw, 15px);
+    color: var(--frame-text);
+    letter-spacing: 0.02em;
+}
+.lbl { font-family: var(--font-display); font-weight: 600; fill: var(--engrave); }
+.lbl-num { font-size: 42px; }
+.lbl-word { font-size: 27px; }
+.lbl-target { fill: var(--accent); font-weight: 700; }
+.target-ring { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 4; }
+.cell-bg { fill: var(--insert); }
+.cell-grid { fill: none; stroke: var(--engrave); stroke-opacity: 0.1; stroke-width: 1.5; }
+.piece { filter: drop-shadow(0 3px 2px var(--shadow)); }
+.piece-edge { stroke: rgba(0, 0, 0, 0.38); stroke-width: 3; stroke-linecap: square; }
+.ghost { opacity: 0.6; pointer-events: none; }
+.ghost.bad .ghost-cell { fill: var(--danger); }
+.ghost.bad .piece-edge { stroke: var(--danger); }
+.flash { animation: flash 0.9s ease-out; }
+@keyframes flash {
+    0% { opacity: 0.2; }
+    40% { opacity: 1; }
+    60% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+.tray-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+.eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0;
+}
+.tray { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.tray-piece {
+    appearance: none;
+    border: 1.5px solid var(--line);
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 8px 6px 6px;
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    cursor: pointer;
+    color: var(--ink);
+    font: inherit;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.tray-piece:hover { border-color: var(--accent); }
+.tray-piece:focus-visible, button:focus-visible, select:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+}
+.tray-piece[aria-pressed="true"] {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    transform: translateY(-2px);
+}
+.tray-piece.on-board svg { opacity: 0.28; }
+.tray-piece svg { width: 100%; max-width: 76px; height: 54px; }
+.tray-name { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; }
+
+button.btn {
+    appearance: none;
+    font: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 10px;
+    padding: 8px 14px;
+    border: 1.5px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+button.btn:hover:not(:disabled) { border-color: var(--accent); }
+button.btn:disabled { opacity: 0.45; cursor: default; }
+button.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+kbd {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    padding: 0 4px;
+    opacity: 0.7;
+}
+
+aside.bench {
+    background: var(--surface);
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    padding: 18px;
+    display: grid;
+    gap: 20px;
+    min-width: 0;
+}
+.group { display: grid; gap: 10px; min-width: 0; }
+.date-row { display: grid; grid-template-columns: 1.3fr 0.8fr 1.1fr; gap: 8px; }
+.field { display: grid; gap: 4px; min-width: 0; }
+.field label { font-size: 12px; color: var(--muted); }
+select {
+    font: inherit;
+    font-size: 14px;
+    padding: 7px 8px;
+    border-radius: 8px;
+    border: 1.5px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    width: 100%;
+    min-width: 0;
+}
+.target-chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.chip {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+.actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.actions .btn { justify-content: center; padding-inline: 6px; }
+.status {
+    margin: 0;
+    min-height: 3em;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--bg);
+    font-size: 14px;
+}
+.status.bad { color: var(--danger); }
+.status.good { color: var(--accent); font-weight: 700; }
+.progress { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+.meter { flex: 1; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.meter > span { display: block; height: 100%; background: var(--accent); transition: width 0.25s ease; }
+.count-line { font-size: 13px; color: var(--muted); margin: 0; font-variant-numeric: tabular-nums; }
+.help { font-size: 13px; color: var(--muted); margin: 0; }
+.help p { margin: 0 0 6px; }
+
+@media (max-width: 520px) {
+    .tray { gap: 6px; }
+    .tray-piece { padding: 6px 2px 4px; border-radius: 9px; }
+    .tray-piece svg { height: 38px; }
+    .tray-name .tag { display: none; }
+    .lbl-word { font-size: 25px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+    <header>
+        <div class="title-block">
+            <h1>A-Puzzle-A-Day</h1>
+            <p class="tagline" data-i18n="tagline"></p>
+        </div>
+        <div class="lang" role="group" aria-label="Language">
+            <button type="button" id="lang-en" data-lang="en">EN</button>
+            <button type="button" id="lang-cs" data-lang="cs">CS</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <section class="play">
+            <div class="frame" id="frame">
+                <svg class="board-svg" id="board" viewBox="0 0 900 600" role="img"></svg>
+                <p class="engraving" data-i18n="engraving"></p>
+            </div>
+
+            <div class="tray-head">
+                <p class="eyebrow" data-i18n="pieces"></p>
+                <div class="tools">
+                    <button class="btn" id="rotate" type="button"><span data-i18n="rotate"></span> <kbd>R</kbd></button>
+                    <button class="btn" id="flip" type="button"><span data-i18n="flip"></span> <kbd>F</kbd></button>
+                    <button class="btn" id="drop" type="button"><span data-i18n="putBack"></span> <kbd>Esc</kbd></button>
+                </div>
+            </div>
+            <div class="tray" id="tray"></div>
+        </section>
+
+        <aside class="bench">
+            <div class="group">
+                <p class="eyebrow" data-i18n="dateHeading"></p>
+                <div class="date-row">
+                    <div class="field">
+                        <label for="month" data-i18n="month"></label>
+                        <select id="month"></select>
+                    </div>
+                    <div class="field">
+                        <label for="day" data-i18n="day"></label>
+                        <select id="day"></select>
+                    </div>
+                    <div class="field">
+                        <label for="weekday" data-i18n="weekday"></label>
+                        <select id="weekday"></select>
+                    </div>
+                </div>
+                <div class="tools">
+                    <button class="btn" id="today" type="button" data-i18n="today"></button>
+                    <div class="target-chips" id="chips"></div>
+                </div>
+            </div>
+
+            <div class="group">
+                <p class="eyebrow" data-i18n="playHeading"></p>
+                <div class="progress"><div class="meter"><span id="meter"></span></div><span id="placed-count">0/10</span></div>
+                <div class="actions">
+                    <button class="btn" id="hint" type="button" data-i18n="hint"></button>
+                    <button class="btn primary" id="solve" type="button" data-i18n="solve"></button>
+                    <button class="btn" id="clear" type="button" data-i18n="clear"></button>
+                </div>
+                <p class="status" id="status" aria-live="polite"></p>
+            </div>
+
+            <div class="group">
+                <p class="eyebrow" data-i18n="solutionsHeading"></p>
+                <button class="btn" id="count" type="button" data-i18n="count"></button>
+                <p class="count-line" id="count-line"></p>
+            </div>
+
+            <div class="group help">
+                <p class="eyebrow" data-i18n="howTo"></p>
+                <p data-i18n="help1"></p>
+                <p data-i18n="help2"></p>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<script>
+const ROWS = 6;
+const COLS = 9;
+const CELL = 100;
+const LAYOUT = [
+    ["m1", "m2", "m3", "m4", "1", "2", "3", "w0", "w1"],
+    ["m5", "4", "5", "6", "7", "8", "9", "w2", ""],
+    ["m6", "10", "11", "12", "13", "31", "15", "w3", ""],
+    ["m7", "16", "17", "18", "19", "20", "21", "w4", "w5"],
+    ["m8", "22", "23", "24", "25", "26", "27", "", "w6"],
+    ["m9", "m10", "m11", "m12", "28", "29", "30", "14", null],
+];
+const I18N = {
+    en: {
+        months: ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
+        monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        weekdayNames: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        tagline: "Cover the board with all ten pentominoes so only the month, the day and the weekday stay visible.",
+        engraving: "Good morning, my darling…",
+        board: "Puzzle board",
+        pieces: "Pieces",
+        rotate: "Rotate",
+        flip: "Flip",
+        putBack: "Put back",
+        dateHeading: "Date to leave open",
+        month: "Month",
+        day: "Day",
+        weekday: "Weekday",
+        today: "Today",
+        playHeading: "Play",
+        hint: "Hint",
+        solve: "Solve",
+        clear: "Clear",
+        solutionsHeading: "Solutions",
+        count: "Count solutions for this date",
+        countDefault: "Every month, day and weekday combination has at least one solution.",
+        counting: (d) => `Counting solutions for ${d}…`,
+        counted: (d, n, ms) => `${d} has ${n} solutions (counted in ${ms} ms).`,
+        howTo: "How to play",
+        help1: "Pick a piece below, then click the board. The highlighted cell sits under the piece's centre.",
+        help2: "Click a placed piece to pick it up again. Hint places one piece that still leads to a solution.",
+        start: (d) => `Pick a piece, then click the board. Leave ${d} uncovered.`,
+        placing: (p) => `Placing ${p}. Click the board, or press R to rotate and F to flip.`,
+        solved: (d) => `Solved. Only ${d} are showing.`,
+        noFit: (p, why) => `${p} doesn't fit there: ${why}.`,
+        offBoard: "it runs off the board",
+        covers: (l) => `it would cover ${l}`,
+        overlaps: (p) => `it overlaps ${p}`,
+        noSolution: "No solution from this position. Pick up a piece and try again.",
+        hinted: (p) => `Hint: placed ${p}. It belongs to a full solution.`,
+        pickedUp: (ps) => `Picked up ${ps} because it covered the new date.`,
+        placedTag: "placed",
+        piece: "Piece",
+    },
+    cs: {
+        months: ["LED", "ÚNO", "BŘE", "DUB", "KVĚ", "ČVN", "ČVC", "SRP", "ZÁŘ", "ŘÍJ", "LIS", "PRO"],
+        monthNames: ["leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec"],
+        weekdays: ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"],
+        weekdayNames: ["pondělí", "úterý", "středa", "čtvrtek", "pátek", "sobota", "neděle"],
+        tagline: "Zakryj desku všemi deseti pentominy tak, aby zůstal vidět jen měsíc, den a den v týdnu.",
+        engraving: "Přeji dobré ráno, zlatíčko moje…",
+        board: "Hrací deska",
+        pieces: "Dílky",
+        rotate: "Otočit",
+        flip: "Převrátit",
+        putBack: "Vrátit",
+        dateHeading: "Datum, které zůstane odkryté",
+        month: "Měsíc",
+        day: "Den",
+        weekday: "Den v týdnu",
+        today: "Dnes",
+        playHeading: "Hra",
+        hint: "Nápověda",
+        solve: "Vyřešit",
+        clear: "Vyčistit",
+        solutionsHeading: "Řešení",
+        count: "Spočítat řešení pro toto datum",
+        countDefault: "Každá kombinace měsíce, dne a dne v týdnu má alespoň jedno řešení.",
+        counting: (d) => `Počítám řešení pro ${d}…`,
+        counted: (d, n, ms) => `${d}: ${n} řešení (spočteno za ${ms} ms).`,
+        howTo: "Jak hrát",
+        help1: "Vyber dílek dole a klikni na desku. Zvýrazněné pole leží pod středem dílku.",
+        help2: "Kliknutím na položený dílek ho zase zvedneš. Nápověda položí jeden dílek, se kterým se dá hra dokončit.",
+        start: (d) => `Vyber dílek a klikni na desku. Nech odkryté ${d}.`,
+        placing: (p) => `Pokládáš ${p}. Klikni na desku, R otočí, F převrátí.`,
+        solved: (d) => `Vyřešeno. Odkryté zůstaly jen ${d}.`,
+        noFit: (p, why) => `${p} se sem nevejde: ${why}.`,
+        offBoard: "přesahuje desku",
+        covers: (l) => `zakryl by ${l}`,
+        overlaps: (p) => `překrývá ${p}`,
+        noSolution: "Z této pozice řešení neexistuje. Zvedni některý dílek a zkus to znovu.",
+        hinted: (p) => `Nápověda: položen dílek ${p}. Patří do úplného řešení.`,
+        pickedUp: (ps) => `Zvednuto ${ps}, protože zakrývalo nové datum.`,
+        placedTag: "položen",
+        piece: "Dílek",
+    },
+};
+const PIECES = {
+    F: [".##", "##.", ".#."],
+    I: ["#####"],
+    L: ["####", "#..."],
+    N: ["##..", ".###"],
+    P: ["##", "##", "#."],
+    T: ["###", ".#.", ".#."],
+    U: ["#.#", "###"],
+    V: ["#..", "#..", "###"],
+    Y: ["####", ".#.."],
+    Z: ["##.", ".#.", ".##"],
+};
+const NAMES = Object.keys(PIECES);
+const COLORS = {
+    F: "#c97a42", I: "#5a8eaa", L: "#8da35b", N: "#b85c58", P: "#d4ab4b",
+    T: "#7f6fae", U: "#4c9a89", V: "#c67ca3", Y: "#9d7a52", Z: "#6c916f",
+};
+
+const tokenPos = {};
+const idxOf = new Int16Array(ROWS * COLS).fill(-1);
+const playable = [];
+for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+        const token = LAYOUT[r][c];
+        if (token === null) continue;
+        idxOf[r * COLS + c] = playable.length;
+        playable.push([r, c]);
+        if (token) tokenPos[token] = [r, c];
+    }
+}
+const N = playable.length;
+const neighbors = playable.map(([r, c]) =>
+    [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]]
+        .filter(([a, b]) => a >= 0 && a < ROWS && b >= 0 && b < COLS && idxOf[a * COLS + b] >= 0)
+        .map(([a, b]) => idxOf[a * COLS + b])
+);
+const isPlayable = (r, c) => r >= 0 && r < ROWS && c >= 0 && c < COLS && idxOf[r * COLS + c] >= 0;
+
+function baseCells(name) {
+    const out = [];
+    PIECES[name].forEach((row, r) => [...row].forEach((ch, c) => { if (ch === "#") out.push([r, c]); }));
+    return out;
+}
+function normalize(pts) {
+    const minR = Math.min(...pts.map((p) => p[0]));
+    const minC = Math.min(...pts.map((p) => p[1]));
+    return pts.map(([r, c]) => [r - minR, c - minC]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+}
+function transform(name, rot, flip) {
+    let pts = baseCells(name).map(([r, c]) => (flip ? [r, -c] : [r, c]));
+    for (let i = 0; i < rot; i++) pts = pts.map(([r, c]) => [c, -r]);
+    return normalize(pts);
+}
+const shapeKey = (pts) => pts.map((p) => p.join(",")).join(";");
+function transformFor(name, cells) {
+    const target = shapeKey(normalize(cells));
+    for (const flip of [false, true]) {
+        for (let rot = 0; rot < 4; rot++) {
+            if (shapeKey(transform(name, rot, flip)) === target) return { rot, flip };
+        }
+    }
+    return { rot: 0, flip: false };
+}
+function anchorOf(shape) {
+    const mr = shape.reduce((s, p) => s + p[0], 0) / shape.length;
+    const mc = shape.reduce((s, p) => s + p[1], 0) / shape.length;
+    let best = shape[0];
+    let bestD = Infinity;
+    for (const p of shape) {
+        const d = (p[0] - mr) ** 2 + (p[1] - mc) ** 2;
+        if (d < bestD - 1e-9) { bestD = d; best = p; }
+    }
+    return best;
+}
+
+const byMin = Array.from({ length: N }, () => []);
+NAMES.forEach((name, p) => {
+    const seen = new Set();
+    for (const flip of [false, true]) {
+        for (let rot = 0; rot < 4; rot++) {
+            const shape = transform(name, rot, flip);
+            const k = shapeKey(shape);
+            if (seen.has(k)) continue;
+            seen.add(k);
+            for (let dr = 0; dr < ROWS; dr++) {
+                for (let dc = 0; dc < COLS; dc++) {
+                    if (!shape.every(([r, c]) => isPlayable(r + dr, c + dc))) continue;
+                    const cells = shape.map(([r, c]) => idxOf[(r + dr) * COLS + c + dc]).sort((a, b) => a - b);
+                    byMin[cells[0]].push({ p, cells });
+                }
+            }
+        }
+    }
+});
+
+function runSolver(blocked, usedNames, limit) {
+    const filled = new Uint8Array(N);
+    blocked.forEach((i) => { filled[i] = 1; });
+    const used = new Uint8Array(NAMES.length);
+    usedNames.forEach((n) => { used[NAMES.indexOf(n)] = 1; });
+    const seen = new Uint8Array(N);
+    const stack = new Int16Array(N);
+    const chosen = [];
+    let first = null;
+    let count = 0;
+
+    function regionsOk() {
+        seen.fill(0);
+        for (let i = 0; i < N; i++) {
+            if (filled[i] || seen[i]) continue;
+            let top = 0;
+            let size = 0;
+            stack[top++] = i;
+            seen[i] = 1;
+            while (top) {
+                const j = stack[--top];
+                size++;
+                for (const k of neighbors[j]) {
+                    if (!filled[k] && !seen[k]) { seen[k] = 1; stack[top++] = k; }
+                }
+            }
+            if (size % 5) return false;
+        }
+        return true;
+    }
+    function search() {
+        let e = 0;
+        while (e < N && filled[e]) e++;
+        if (e === N) {
+            count++;
+            if (!first) first = chosen.slice();
+            return count >= limit;
+        }
+        for (const pl of byMin[e]) {
+            if (used[pl.p]) continue;
+            const cells = pl.cells;
+            if (filled[cells[1]] || filled[cells[2]] || filled[cells[3]] || filled[cells[4]]) continue;
+            for (const i of cells) filled[i] = 1;
+            used[pl.p] = 1;
+            chosen.push(pl);
+            if (regionsOk() && search()) return true;
+            chosen.pop();
+            used[pl.p] = 0;
+            for (const i of cells) filled[i] = 0;
+        }
+        return false;
+    }
+    if (regionsOk()) search();
+    return {
+        first: first ? first.map((pl) => ({ name: NAMES[pl.p], cells: pl.cells.map((i) => playable[i]) })) : null,
+        count,
+    };
+}
+
+const state = {
+    lang: "en",
+    month: 1,
+    day: 1,
+    weekday: 0,
+    placed: new Map(),
+    selected: null,
+    pose: { rot: 0, flip: false },
+    hover: null,
+    flashName: null,
+    message: null,
+    tone: "",
+    count: null,
+};
+
+const $ = (id) => document.getElementById(id);
+const boardEl = $("board");
+const t = () => I18N[state.lang];
+
+function labelOf(token) {
+    if (!token) return "";
+    if (token[0] === "m") return t().months[Number(token.slice(1)) - 1];
+    if (token[0] === "w") return t().weekdays[Number(token.slice(1))];
+    return token;
+}
+function targets() {
+    return [tokenPos[`m${state.month}`], tokenPos[String(state.day)], tokenPos[`w${state.weekday}`]];
+}
+function targetText() {
+    return [t().months[state.month - 1], String(state.day), t().weekdays[state.weekday]].join(", ");
+}
+const sameCell = (a, b) => a[0] === b[0] && a[1] === b[1];
+function ownerMap() {
+    const owner = {};
+    state.placed.forEach((cells, name) => cells.forEach(([r, c]) => { owner[r * COLS + c] = name; }));
+    return owner;
+}
+function ghostCells() {
+    if (!state.selected || !state.hover) return null;
+    const shape = transform(state.selected, state.pose.rot, state.pose.flip);
+    const [ar, ac] = anchorOf(shape);
+    return shape.map(([r, c]) => [r - ar + state.hover[0], c - ac + state.hover[1]]);
+}
+function problemWith(cells) {
+    if (cells.some(([r, c]) => !isPlayable(r, c))) return t().offBoard;
+    const tg = targets();
+    const hit = cells.find((cell) => tg.some((x) => sameCell(x, cell)));
+    if (hit) return t().covers(labelOf(LAYOUT[hit[0]][hit[1]]));
+    const owner = ownerMap();
+    const clash = cells.map(([r, c]) => owner[r * COLS + c]).find(Boolean);
+    if (clash) return t().overlaps(clash);
+    return "";
+}
+const isSolved = () => state.placed.size === NAMES.length;
+
+function pieceSvg(name, cells, extraClass, cellClass) {
+    const set = new Set(cells.map(([r, c]) => `${r},${c}`));
+    let rects = "";
+    let edges = "";
+    for (const [r, c] of cells) {
+        const x = c * CELL;
+        const y = r * CELL;
+        rects += `<rect class="${cellClass}" x="${x}" y="${y}" width="${CELL}" height="${CELL}" fill="${COLORS[name]}"/>`;
+        rects += `<rect x="${x}" y="${y}" width="${CELL}" height="${CELL}" fill="url(#grain)"/>`;
+        if (!set.has(`${r - 1},${c}`)) edges += `<line class="piece-edge" x1="${x}" y1="${y}" x2="${x + CELL}" y2="${y}"/>`;
+        if (!set.has(`${r + 1},${c}`)) edges += `<line class="piece-edge" x1="${x}" y1="${y + CELL}" x2="${x + CELL}" y2="${y + CELL}"/>`;
+        if (!set.has(`${r},${c - 1}`)) edges += `<line class="piece-edge" x1="${x}" y1="${y}" x2="${x}" y2="${y + CELL}"/>`;
+        if (!set.has(`${r},${c + 1}`)) edges += `<line class="piece-edge" x1="${x + CELL}" y1="${y}" x2="${x + CELL}" y2="${y + CELL}"/>`;
+    }
+    return `<g class="${extraClass}">${rects}${edges}</g>`;
+}
+
+function renderBoard() {
+    const tg = targets();
+    let out = `<defs><pattern id="grain" width="100" height="24" patternUnits="userSpaceOnUse">
+        <path d="M0 6 C25 3 50 9 100 5 M0 15 C30 18 60 12 100 16 M0 21 C35 20 65 23 100 21" fill="none" stroke="#000" stroke-opacity="0.07" stroke-width="1.4"/>
+        </pattern></defs>`;
+    for (const [r, c] of playable) {
+        out += `<rect class="cell-bg" x="${c * CELL - 0.5}" y="${r * CELL - 0.5}" width="${CELL + 1}" height="${CELL + 1}"/>`;
+    }
+    for (const [r, c] of playable) {
+        out += `<rect class="cell-grid" x="${c * CELL + 4}" y="${r * CELL + 4}" width="${CELL - 8}" height="${CELL - 8}" rx="10"/>`;
+    }
+    for (const [r, c] of tg) {
+        out += `<rect class="target-ring" x="${c * CELL + 8}" y="${r * CELL + 8}" width="${CELL - 16}" height="${CELL - 16}" rx="14"/>`;
+    }
+    for (const [r, c] of playable) {
+        const label = labelOf(LAYOUT[r][c]);
+        if (!label) continue;
+        const isTarget = tg.some((x) => x[0] === r && x[1] === c);
+        const size = /^\d+$/.test(label) ? "lbl-num" : "lbl-word";
+        out += `<text class="lbl ${size}${isTarget ? " lbl-target" : ""}" x="${c * CELL + CELL / 2}" y="${r * CELL + CELL / 2}" text-anchor="middle" dominant-baseline="central">${label}</text>`;
+    }
+    state.placed.forEach((cells, name) => {
+        out += pieceSvg(name, cells, `piece${state.flashName === name ? " flash" : ""}`, "piece-cell");
+    });
+    const ghost = ghostCells();
+    if (ghost) {
+        const bad = problemWith(ghost) !== "";
+        const shown = ghost.filter(([r, c]) => r >= -1 && r <= ROWS && c >= -1 && c <= COLS);
+        out += pieceSvg(state.selected, shown, `ghost${bad ? " bad" : ""}`, "ghost-cell");
+    }
+    boardEl.innerHTML = out;
+    boardEl.setAttribute("aria-label", t().board);
+    $("frame").classList.toggle("solved", isSolved());
+}
+
+function miniSvg(name, shape) {
+    const h = Math.max(...shape.map((p) => p[0])) + 1;
+    const w = Math.max(...shape.map((p) => p[1])) + 1;
+    const s = 20;
+    const rects = shape
+        .map(([r, c]) => `<rect x="${c * s + 1}" y="${r * s + 1}" width="${s - 2}" height="${s - 2}" rx="3" fill="${COLORS[name]}"/>`)
+        .join("");
+    return `<svg viewBox="0 0 ${w * s} ${h * s}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${rects}</svg>`;
+}
+
+function renderTray() {
+    $("tray").innerHTML = NAMES.map((name) => {
+        const selected = state.selected === name;
+        const shape = selected ? transform(name, state.pose.rot, state.pose.flip) : transform(name, 0, false);
+        const onBoard = state.placed.has(name);
+        const label = onBoard ? `${name} · ${t().placedTag}` : name;
+        const shown = onBoard ? `${name}<span class="tag"> · ${t().placedTag}</span>` : name;
+        return `<button type="button" class="tray-piece${onBoard ? " on-board" : ""}" data-name="${name}" aria-pressed="${selected}" aria-label="${t().piece} ${label}">${miniSvg(name, shape)}<span class="tray-name">${shown}</span></button>`;
+    }).join("");
+    const has = Boolean(state.selected);
+    $("rotate").disabled = !has;
+    $("flip").disabled = !has;
+    $("drop").disabled = !has;
+}
+
+function renderStatic() {
+    document.documentElement.lang = state.lang;
+    document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t()[el.dataset.i18n]; });
+    document.querySelectorAll(".lang button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === state.lang)));
+    $("month").innerHTML = t().months.map((m, i) => `<option value="${i + 1}">${t().monthNames[i]}</option>`).join("");
+    $("day").innerHTML = Array.from({ length: 31 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join("");
+    $("weekday").innerHTML = t().weekdays.map((w, i) => `<option value="${i}">${t().weekdayNames[i]}</option>`).join("");
+}
+
+function renderPanel() {
+    $("month").value = String(state.month);
+    $("day").value = String(state.day);
+    $("weekday").value = String(state.weekday);
+    $("chips").innerHTML = targetText().split(", ").map((l) => `<span class="chip">${l}</span>`).join("");
+    const n = state.placed.size;
+    $("meter").style.width = `${(n / NAMES.length) * 100}%`;
+    $("placed-count").textContent = `${n}/${NAMES.length}`;
+    const status = $("status");
+    status.textContent = state.message ? state.message() : defaultMessage();
+    status.className = `status ${state.tone}`;
+    const c = state.count;
+    $("count-line").textContent = !c
+        ? t().countDefault
+        : c.pending
+            ? t().counting(targetText())
+            : t().counted(targetText(), c.n, c.ms);
+    $("hint").disabled = isSolved();
+    $("solve").disabled = isSolved();
+}
+
+function defaultMessage() {
+    if (isSolved()) return t().solved(targetText());
+    if (state.selected) return t().placing(state.selected);
+    return t().start(targetText());
+}
+
+function render() {
+    renderBoard();
+    renderTray();
+    renderPanel();
+}
+
+function say(message, tone) {
+    state.message = message;
+    state.tone = tone || "";
+}
+
+function setLang(lang) {
+    state.lang = lang;
+    try { localStorage.setItem("apad-lang", lang); } catch (e) { }
+    renderStatic();
+    render();
+}
+
+function select(name) {
+    if (state.placed.has(name)) {
+        state.pose = transformFor(name, state.placed.get(name));
+        state.placed.delete(name);
+    } else if (state.selected !== name) {
+        state.pose = { rot: 0, flip: false };
+    }
+    state.selected = name;
+    say(null);
+}
+
+function cellFromEvent(ev) {
+    const rect = boardEl.getBoundingClientRect();
+    const c = Math.floor(((ev.clientX - rect.left) / rect.width) * COLS);
+    const r = Math.floor(((ev.clientY - rect.top) / rect.height) * ROWS);
+    if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return null;
+    return [r, c];
+}
+
+boardEl.addEventListener("pointermove", (ev) => {
+    const cell = cellFromEvent(ev);
+    if (state.hover && cell && sameCell(state.hover, cell)) return;
+    state.hover = cell;
+    if (state.selected) renderBoard();
+});
+boardEl.addEventListener("pointerleave", () => {
+    state.hover = null;
+    if (state.selected) renderBoard();
+});
+boardEl.addEventListener("pointerdown", (ev) => {
+    state.hover = cellFromEvent(ev);
+});
+boardEl.addEventListener("click", (ev) => {
+    const cell = cellFromEvent(ev) || state.hover;
+    if (!cell) return;
+    state.hover = cell;
+    state.flashName = null;
+    if (state.selected) {
+        const ghost = ghostCells();
+        const problem = problemWith(ghost);
+        if (problem) {
+            const name = state.selected;
+            say(() => t().noFit(name, problemWith(ghost) || problem), "bad");
+        } else {
+            state.placed.set(state.selected, ghost);
+            state.selected = null;
+            say(null, isSolved() ? "good" : "");
+        }
+    } else {
+        const owner = ownerMap()[cell[0] * COLS + cell[1]];
+        if (owner) select(owner);
+    }
+    render();
+});
+
+$("tray").addEventListener("click", (ev) => {
+    const btn = ev.target.closest(".tray-piece");
+    if (!btn) return;
+    const name = btn.dataset.name;
+    state.flashName = null;
+    if (state.selected === name) {
+        state.selected = null;
+        say(null);
+    } else {
+        select(name);
+    }
+    render();
+});
+
+function rotate() {
+    if (!state.selected) return;
+    state.pose = { rot: (state.pose.rot + 1) % 4, flip: state.pose.flip };
+    render();
+}
+function flip() {
+    if (!state.selected) return;
+    state.pose = { rot: (4 - state.pose.rot) % 4, flip: !state.pose.flip };
+    render();
+}
+function drop() {
+    state.selected = null;
+    say(null);
+    render();
+}
+$("rotate").addEventListener("click", rotate);
+$("flip").addEventListener("click", flip);
+$("drop").addEventListener("click", drop);
+
+document.addEventListener("keydown", (ev) => {
+    if (ev.target.closest && ev.target.closest("select")) return;
+    if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    const k = ev.key.toLowerCase();
+    if (k === "r") rotate();
+    else if (k === "f") flip();
+    else if (k === "escape") drop();
+    else if (k === "h") hint();
+});
+
+function solveCurrent() {
+    const blocked = targets().map(([r, c]) => idxOf[r * COLS + c]);
+    state.placed.forEach((cells) => cells.forEach(([r, c]) => blocked.push(idxOf[r * COLS + c])));
+    return runSolver(blocked, [...state.placed.keys()], 1).first;
+}
+
+function hint() {
+    if (isSolved()) return;
+    state.selected = null;
+    const solution = solveCurrent();
+    if (!solution) {
+        say(() => t().noSolution, "bad");
+        render();
+        return;
+    }
+    const [first] = solution;
+    state.placed.set(first.name, first.cells);
+    state.flashName = first.name;
+    if (isSolved()) say(null, "good");
+    else say(() => t().hinted(first.name));
+    render();
+}
+
+function solveAll() {
+    state.selected = null;
+    const solution = solveCurrent();
+    if (!solution) {
+        say(() => t().noSolution, "bad");
+        render();
+        return;
+    }
+    solution.forEach(({ name, cells }) => state.placed.set(name, cells));
+    state.flashName = null;
+    say(null, "good");
+    render();
+}
+
+$("hint").addEventListener("click", hint);
+$("solve").addEventListener("click", solveAll);
+$("clear").addEventListener("click", () => {
+    state.placed.clear();
+    state.selected = null;
+    state.flashName = null;
+    say(null);
+    render();
+});
+
+$("count").addEventListener("click", () => {
+    state.count = { pending: true };
+    renderPanel();
+    setTimeout(() => {
+        const t0 = performance.now();
+        const blocked = targets().map(([r, c]) => idxOf[r * COLS + c]);
+        const { count } = runSolver(blocked, [], Infinity);
+        state.count = { n: count, ms: Math.round(performance.now() - t0) };
+        renderPanel();
+    }, 30);
+});
+
+function setTarget(month, day, weekday) {
+    state.month = month;
+    state.day = day;
+    state.weekday = weekday;
+    state.count = null;
+    const tg = targets();
+    const removed = [];
+    state.placed.forEach((cells, name) => {
+        if (cells.some((cell) => tg.some((x) => sameCell(x, cell)))) removed.push(name);
+    });
+    removed.forEach((name) => state.placed.delete(name));
+    say(removed.length ? () => t().pickedUp(removed.join(", ")) : null);
+    render();
+}
+function setToday() {
+    const now = new Date();
+    setTarget(now.getMonth() + 1, now.getDate(), (now.getDay() + 6) % 7);
+}
+
+const readSelects = () => setTarget(Number($("month").value), Number($("day").value), Number($("weekday").value));
+$("month").addEventListener("change", readSelects);
+$("day").addEventListener("change", readSelects);
+$("weekday").addEventListener("change", readSelects);
+$("today").addEventListener("click", setToday);
+document.querySelectorAll(".lang button").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
+
+function initialLang() {
+    const hash = location.hash.slice(1);
+    if (hash in I18N) return hash;
+    try {
+        const saved = localStorage.getItem("apad-lang");
+        if (saved in I18N) return saved;
+    } catch (e) { }
+    return (navigator.language || "").toLowerCase().startsWith("cs") ? "cs" : "en";
+}
+
+state.lang = initialLang();
+renderStatic();
+setToday();
+</script>
+</body>
+</html>
