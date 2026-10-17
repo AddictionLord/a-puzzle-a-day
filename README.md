@@ -1,6 +1,7 @@
 # A-Puzzle-A-Day
 
 [![CI](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/ci.yml)
+[![Pages](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/pages.yml/badge.svg?branch=main)](https://addictionlord.github.io/a-puzzle-a-day/)
 
 A game and solver for a wooden calendar puzzle. Ten pentominoes go on a 6 × 9 board so that exactly three
 cells stay visible: today's **month**, **day** and **weekday**. There is a puzzle for every day of the year,
@@ -11,6 +12,8 @@ The repository has two parts:
 - a **browser game** in a single HTML file, with hints, an instant solver and a browser for every
   solution;
 - a **Python package** with the same board model, a terminal game and an exact-cover solver.
+
+**[▶ Play online](https://addictionlord.github.io/a-puzzle-a-day/)**
 
 ![Playing in the browser](docs/images/play.png)
 
@@ -35,7 +38,8 @@ The layout follows a laser-cut wooden calendar puzzle:
 
 ## Play in the browser
 
-Open [`web/index.html`](web/index.html) in any modern browser. Nothing to build or install; the page only
+Play at **[addictionlord.github.io/a-puzzle-a-day](https://addictionlord.github.io/a-puzzle-a-day/)**, or open
+[`web/index.html`](web/index.html) locally in any modern browser. Nothing to build or install; the page only
 loads its fonts from Google Fonts.
 
 - Pick a piece from the tray, turn it with **Rotate** (`R`) or **Flip** (`F`), and click the board. A
