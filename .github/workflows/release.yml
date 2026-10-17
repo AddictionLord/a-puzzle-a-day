@@ -12,6 +12,10 @@ on:
         description: "Commit SHA or branch to tag"
         required: true
         default: main
+      replace:
+        description: "Delete an existing release and tag with this version first"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -28,9 +32,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ inputs.version || github.ref_name }}
+          REPLACE: ${{ inputs.replace }}
         run: |
           if gh release view "$VERSION" > /dev/null 2>&1; then
-            echo "Release $VERSION already exists"
-            exit 0
+            if [ "$REPLACE" != "true" ]; then
+              echo "Release $VERSION already exists"
+              exit 0
+            fi
+            gh release delete "$VERSION" --cleanup-tag --yes
           fi
           gh release create "$VERSION" --target "$(git rev-parse HEAD)" --title "$VERSION" --generate-notes
