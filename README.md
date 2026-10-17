@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/ci.yml)
 [![Pages](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/pages.yml/badge.svg?branch=main)](https://addictionlord.github.io/a-puzzle-a-day/)
+[![Release](https://img.shields.io/github/v/release/AddictionLord/a-puzzle-a-day)](https://github.com/AddictionLord/a-puzzle-a-day/releases)
 
 A game and solver for a wooden calendar puzzle. Ten pentominoes go on a 6 × 9 board so that exactly three
 cells stay visible: today's **month**, **day** and **weekday**. There is a puzzle for every day of the year,
@@ -140,23 +141,26 @@ solutions for a date in about 0.5 s.
 
 ```
 apad/
-    board.py      board layout, labels, target_cells()
-    pieces.py     pentomino shapes and orientations
-    ascii.py      text renderer
-    game.py       GameState and the terminal game
-    plot.py       plotly board figure
-    solver.py     bitmask Algorithm X solver and CLI
+    board.py        board layout, labels, target_cells()
+    pieces.py       pentomino shapes and orientations
+    ascii.py        text renderer
+    game.py         GameState and the terminal game
+    plot.py         plotly board figure
+    solver.py       bitmask Algorithm X solver and CLI
 scripts/
     check_all_dates.py
-tests/
+tests/              pytest suite for the Python package
 web/
-    index.html    the browser game (self-contained)
-    screenshots.js  regenerates docs/images with Playwright
+    index.html      the browser game (self-contained)
+    tests/          Playwright tests for the browser game
+    screenshots.js  regenerates docs/images
 docs/images/
-PLAN.md           original design and work split
+PLAN.md             original design and work split
 ```
 
 ## Development
+
+Python package:
 
 ```bash
 ruff check . && ruff format --check .
@@ -164,8 +168,26 @@ python -m pytest -q                 # 465 tests
 python -m pytest -q -m "not slow"   # skip the 372-date sweep
 ```
 
-Regenerate the screenshots after changing the web game (needs Node with Playwright):
+Browser game (Node 20+):
+
+```bash
+npm ci
+npx playwright install chromium
+npx playwright test                 # 35 tests on a desktop and a phone viewport
+```
+
+The browser tests play the real page: placing, rotating and picking up pieces, every kind of rejected
+move, hint, solve, dead positions, date changes and the solution slider. They also check that the
+JavaScript solver finds exactly as many solutions as the Python solver for five dates (168, 502, 527, 222
+and 623).
+
+Regenerate the screenshots after changing the web game:
 
 ```bash
 node web/screenshots.js
 ```
+
+## Releases
+
+Pushing a `v*` tag, or running the **Release** workflow from the Actions tab with a version and a commit,
+creates the tag and a GitHub release with notes generated from the merged pull requests.

@@ -5,3 +5,6 @@ __pycache__/
 *.egg-info/
 .venv/
 /*.html
+node_modules/
+test-results/
+playwright-report/
