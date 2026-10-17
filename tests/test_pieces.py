@@ -50,4 +50,5 @@ def test_render_ascii():
     assert len(lines) == 6
     assert lines[0].count("I") == 5
     assert "[16]" in text
-    assert "[Pá]" in text
+    assert "[Fri]" in text
+    assert "[OCT]" in text

@@ -29,7 +29,7 @@ def test_engraved_quirks():
 
 
 def test_targets_for_date():
-    """Friday 16 Oct 2026 maps to ŘÍJ, 16, Pá."""
+    """Friday 16 Oct 2026 maps to OCT, 16, Fri."""
     assert targets_for_date(datetime.date(2026, 10, 16)) == ((5, 1), (3, 1), (3, 7))
 
 

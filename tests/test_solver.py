@@ -11,7 +11,7 @@ LIS_16_PA = target_cells(11, 16, 4)
 
 @pytest.fixture(scope="module")
 def all_lis_16_pa() -> List[Placements]:
-    """All solutions for 16 LIS Pá."""
+    """All solutions for NOV 16 Fri."""
     return solve(LIS_16_PA, limit=None)
 
 
@@ -38,7 +38,7 @@ def test_first_solution_valid(date: Tuple[int, int, int]) -> None:
 
 
 def test_count_solutions_lis_16_pa() -> None:
-    """16 LIS Pá has 168 solutions, matching the scratch solver."""
+    """NOV 16 Fri has 168 solutions, matching the scratch solver."""
     assert count_solutions(LIS_16_PA) == 168
 
 

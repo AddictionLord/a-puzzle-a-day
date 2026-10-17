@@ -20,7 +20,6 @@
     --frame: #d4b07c;
     --insert: #f3ece0;
     --engrave: #7b4a21;
-    --frame-text: #5f3816;
     --accent: #2c6b5e;
     --accent-soft: rgba(44, 107, 94, 0.14);
     --accent-ink: #ffffff;
@@ -41,7 +40,6 @@
         --frame: #8f6d45;
         --insert: #2b2721;
         --engrave: #e3b47c;
-        --frame-text: #f1d3a8;
         --accent: #72c4af;
         --accent-soft: rgba(114, 196, 175, 0.18);
         --accent-ink: #0f1c18;
@@ -59,7 +57,6 @@
     --frame: #8f6d45;
     --insert: #2b2721;
     --engrave: #e3b47c;
-    --frame-text: #f1d3a8;
     --accent: #72c4af;
     --accent-soft: rgba(114, 196, 175, 0.18);
     --accent-ink: #0f1c18;
@@ -109,28 +106,6 @@ h1 {
     text-wrap: balance;
 }
 .tagline { margin: 0; color: var(--muted); max-width: 58ch; }
-.lang {
-    display: inline-flex;
-    border: 1.5px solid var(--line);
-    border-radius: 999px;
-    padding: 3px;
-    background: var(--surface);
-}
-.lang button {
-    appearance: none;
-    border: 0;
-    background: transparent;
-    color: var(--muted);
-    font-family: var(--font-mono);
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    padding: 4px 12px;
-    border-radius: 999px;
-    cursor: pointer;
-}
-.lang button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
-
 .layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 300px;
@@ -148,7 +123,7 @@ h1 {
         repeating-linear-gradient(93deg, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 23px),
         var(--frame);
     border-radius: 22px;
-    padding: clamp(12px, 3vw, 26px) clamp(12px, 3vw, 26px) 10px;
+    padding: clamp(12px, 3vw, 26px);
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 14px 30px -14px var(--shadow);
     transition: box-shadow 0.4s ease;
 }
@@ -161,15 +136,6 @@ h1 {
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
-}
-.engraving {
-    margin: 8px 0 0;
-    text-align: center;
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: clamp(11px, 1.8vw, 15px);
-    color: var(--frame-text);
-    letter-spacing: 0.02em;
 }
 .lbl { font-family: var(--font-display); font-weight: 600; fill: var(--engrave); }
 .lbl-num { font-size: 42px; }
@@ -342,17 +308,12 @@ input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-of
             <h1>A-Puzzle-A-Day</h1>
             <p class="tagline" data-i18n="tagline"></p>
         </div>
-        <div class="lang" role="group" aria-label="Language">
-            <button type="button" id="lang-en" data-lang="en">EN</button>
-            <button type="button" id="lang-cs" data-lang="cs">CS</button>
-        </div>
     </header>
 
     <div class="layout">
         <section class="play">
             <div class="frame" id="frame">
                 <svg class="board-svg" id="board" viewBox="0 0 900 600" role="img"></svg>
-                <p class="engraving" data-i18n="engraving"></p>
             </div>
 
             <div class="tray-head">
@@ -442,7 +403,6 @@ const I18N = {
         weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         weekdayNames: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         tagline: "Cover the board with all ten pentominoes so only the month, the day and the weekday stay visible.",
-        engraving: "Good morning, my darling…",
         board: "Puzzle board",
         pieces: "Pieces",
         rotate: "Rotate",
@@ -482,53 +442,6 @@ const I18N = {
         pickedUp: (ps) => `Picked up ${ps} because it covered the new date.`,
         placedTag: "placed",
         piece: "Piece",
-    },
-    cs: {
-        months: ["LED", "ÚNO", "BŘE", "DUB", "KVĚ", "ČVN", "ČVC", "SRP", "ZÁŘ", "ŘÍJ", "LIS", "PRO"],
-        monthNames: ["leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec"],
-        weekdays: ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"],
-        weekdayNames: ["pondělí", "úterý", "středa", "čtvrtek", "pátek", "sobota", "neděle"],
-        tagline: "Zakryj desku všemi deseti pentominy tak, aby zůstal vidět jen měsíc, den a den v týdnu.",
-        engraving: "Přeji dobré ráno, zlatíčko moje…",
-        board: "Hrací deska",
-        pieces: "Dílky",
-        rotate: "Otočit",
-        flip: "Převrátit",
-        putBack: "Vrátit",
-        dateHeading: "Datum, které zůstane odkryté",
-        month: "Měsíc",
-        day: "Den",
-        weekday: "Den v týdnu",
-        today: "Dnes",
-        playHeading: "Hra",
-        hint: "Nápověda",
-        solve: "Vyřešit",
-        clear: "Vyčistit",
-        solutionsHeading: "Řešení",
-        count: "Najít všechna řešení",
-        countDefault: "Každá kombinace měsíce, dne a dne v týdnu má alespoň jedno řešení.",
-        counting: (d) => `Hledám všechna řešení pro ${d}…`,
-        counted: (d, n, ms) => `${d}: ${n} řešení (nalezeno za ${ms} ms).`,
-        solutionLabel: (k, n) => `Řešení ${k} / ${n}`,
-        showing: (k, n) => `Zobrazeno řešení ${k} z ${n}.`,
-        prevSolution: "Předchozí řešení",
-        nextSolution: "Další řešení",
-        browseSolutions: "Procházet řešení",
-        howTo: "Jak hrát",
-        help1: "Vyber dílek dole a klikni na desku. Zvýrazněné pole leží pod středem dílku.",
-        help2: "Kliknutím na položený dílek ho zase zvedneš. Nápověda položí jeden dílek, se kterým se dá hra dokončit.",
-        start: (d) => `Vyber dílek a klikni na desku. Nech odkryté ${d}.`,
-        placing: (p) => `Pokládáš ${p}. Klikni na desku, R otočí, F převrátí.`,
-        solved: (d) => `Vyřešeno. Odkryté zůstaly jen ${d}.`,
-        noFit: (p, why) => `${p} se sem nevejde: ${why}.`,
-        offBoard: "přesahuje desku",
-        covers: (l) => `zakryl by ${l}`,
-        overlaps: (p) => `překrývá ${p}`,
-        noSolution: "Z této pozice řešení neexistuje. Zvedni některý dílek a zkus to znovu.",
-        hinted: (p) => `Nápověda: položen dílek ${p}. Patří do úplného řešení.`,
-        pickedUp: (ps) => `Zvednuto ${ps}, protože zakrývalo nové datum.`,
-        placedTag: "položen",
-        piece: "Dílek",
     },
 };
 const PIECES = {
@@ -821,7 +734,6 @@ function renderTray() {
 function renderStatic() {
     document.documentElement.lang = state.lang;
     document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t()[el.dataset.i18n]; });
-    document.querySelectorAll(".lang button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === state.lang)));
     $("month").innerHTML = t().months.map((m, i) => `<option value="${i + 1}">${t().monthNames[i]}</option>`).join("");
     $("day").innerHTML = Array.from({ length: 31 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join("");
     $("weekday").innerHTML = t().weekdays.map((w, i) => `<option value="${i}">${t().weekdayNames[i]}</option>`).join("");
@@ -875,13 +787,6 @@ function render() {
 function say(message, tone) {
     state.message = message;
     state.tone = tone || "";
-}
-
-function setLang(lang) {
-    state.lang = lang;
-    try { localStorage.setItem("apad-lang", lang); } catch (e) { }
-    renderStatic();
-    render();
 }
 
 function select(name) {
@@ -1083,19 +988,7 @@ $("month").addEventListener("change", readSelects);
 $("day").addEventListener("change", readSelects);
 $("weekday").addEventListener("change", readSelects);
 $("today").addEventListener("click", setToday);
-document.querySelectorAll(".lang button").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
 
-function initialLang() {
-    const hash = location.hash.slice(1);
-    if (hash in I18N) return hash;
-    try {
-        const saved = localStorage.getItem("apad-lang");
-        if (saved in I18N) return saved;
-    } catch (e) { }
-    return (navigator.language || "").toLowerCase().startsWith("cs") ? "cs" : "en";
-}
-
-state.lang = initialLang();
 renderStatic();
 setToday();
 </script>
