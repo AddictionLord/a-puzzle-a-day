@@ -1,7 +1,7 @@
 from functools import cache
 from typing import Dict, List, Set, Tuple
 
-from apad.board import Cell, Shape
+from pentaday.board import Cell, Shape
 
 PIECES: Dict[str, List[str]] = {
     "F": [".##", "##.", ".#."],

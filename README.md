@@ -1,12 +1,16 @@
-# A-Puzzle-A-Day
+# Pentaday
 
-[![CI](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/ci.yml)
-[![Pages](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/pages.yml/badge.svg?branch=main)](https://addictionlord.github.io/a-puzzle-a-day/)
-[![Release](https://img.shields.io/github/v/release/AddictionLord/a-puzzle-a-day)](https://github.com/AddictionLord/a-puzzle-a-day/releases)
+[![CI](https://github.com/AddictionLord/pentaday/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AddictionLord/pentaday/actions/workflows/ci.yml)
+[![Pages](https://github.com/AddictionLord/pentaday/actions/workflows/pages.yml/badge.svg?branch=main)](https://addictionlord.github.io/pentaday/)
+[![Release](https://img.shields.io/github/v/release/AddictionLord/pentaday)](https://github.com/AddictionLord/pentaday/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 A game and solver for a wooden calendar puzzle. Ten pentominoes go on a 6 × 9 board so that exactly three
 cells stay visible: today's **month**, **day** and **weekday**. There is a puzzle for every day of the year,
 and every one of them has a solution.
+
+Pentaday is a variant of the calendar puzzles popularised by DragonFjord's A-Puzzle-A-Day, with weekdays on the
+board and its own set of ten pentominoes.
 
 The repository has two parts:
 
@@ -14,7 +18,7 @@ The repository has two parts:
   solution;
 - a **Python package** with the same board model, a terminal game and an exact-cover solver.
 
-**[▶ Play online](https://addictionlord.github.io/a-puzzle-a-day/)**
+**[▶ Play online](https://addictionlord.github.io/pentaday/)**
 
 ![Playing in the browser](docs/images/play.png)
 
@@ -39,7 +43,7 @@ The layout follows a laser-cut wooden calendar puzzle:
 
 ## Play in the browser
 
-Play at **[addictionlord.github.io/a-puzzle-a-day](https://addictionlord.github.io/a-puzzle-a-day/)**, or open
+Play at **[addictionlord.github.io/pentaday](https://addictionlord.github.io/pentaday/)**, or open
 [`web/index.html`](web/index.html) locally in any modern browser. Nothing to build or install; the page only
 loads its fonts from Google Fonts.
 
@@ -72,9 +76,9 @@ pip install -e ".[dev]"
 ### Terminal game
 
 ```bash
-python -m apad.game                                  # today's date
-python -m apad.game --date 2026-10-16
-python -m apad.game --month 11 --day 16 --weekday 4  # NOV 16 Fri (Monday = 0)
+python -m pentaday.game                                  # today's date
+python -m pentaday.game --date 2026-10-16
+python -m pentaday.game --month 11 --day 16 --weekday 4  # NOV 16 Fri (Monday = 0)
 ```
 
 Commands: `show`, `pieces [NAME ...]` (orientations with their indices), `place F 3 2 4`
@@ -82,7 +86,7 @@ Commands: `show`, `pieces [NAME ...]` (orientations with their indices), `place 
 `plot [out.html]` (plotly board in the browser or written to HTML), `hint`, `solve`, `help`, `quit`.
 
 ```
-$ printf "hint\nsolve\nquit\n" | python -m apad.game --date 2026-10-16
+$ printf "hint\nsolve\nquit\n" | python -m pentaday.game --date 2026-10-16
 Try: place F 0 0 0
   F     F     L     L     L     L     U     U     U
   I     F     F     V     Z     L     U     N     U
@@ -97,16 +101,16 @@ Congratulations, the puzzle is solved for OCT 16 Fri!
 ### Solver
 
 ```bash
-python -m apad.solver                                  # first solution for today
-python -m apad.solver --date 2026-10-16 --limit 3      # first three solutions for a date
-python -m apad.solver --month 11 --day 16 --weekday 4 --all
-python -m apad.solver --month 11 --day 16 --weekday 4 --count
+python -m pentaday.solver                                  # first solution for today
+python -m pentaday.solver --date 2026-10-16 --limit 3      # first three solutions for a date
+python -m pentaday.solver --month 11 --day 16 --weekday 4 --all
+python -m pentaday.solver --month 11 --day 16 --weekday 4 --count
 python -m scripts.check_all_dates                      # all 12 × 31 × 7 combinations
 ```
 
 ```python
-from apad.board import target_cells
-from apad.solver import count_solutions, solve, solve_partial
+from pentaday.board import target_cells
+from pentaday.solver import count_solutions, solve, solve_partial
 
 targets = target_cells(11, 16, 4)
 first = solve(targets)
@@ -140,7 +144,7 @@ solutions for a date in about 0.5 s.
 ## Project layout
 
 ```
-apad/
+pentaday/
     board.py        board layout, labels, target_cells()
     pieces.py       pentomino shapes and orientations
     ascii.py        text renderer
@@ -191,3 +195,7 @@ node web/screenshots.js
 
 Pushing a `v*` tag, or running the **Release** workflow from the Actions tab with a version and a commit,
 creates the tag and a GitHub release with notes generated from the merged pull requests.
+
+## License
+
+[MIT](LICENSE)

@@ -1,4 +1,4 @@
-from apad.board import COLS, LAYOUT, ROWS, Placements, Targets
+from pentaday.board import COLS, LAYOUT, ROWS, Placements, Targets
 
 CELL_WIDTH = 6
 

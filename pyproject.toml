@@ -1,15 +1,16 @@
 [project]
-name = "apad"
+name = "pentaday"
 version = "1.1.0"
-description = "A-Puzzle-A-Day calendar puzzle: game and solver"
+description = "Pentaday: a calendar pentomino puzzle, with a game and an exact-cover solver"
 requires-python = ">=3.10"
+license = {text = "MIT"}
 dependencies = ["plotly>=5"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "ruff>=0.6"]
 
 [tool.setuptools]
-packages = ["apad"]
+packages = ["pentaday"]
 
 [tool.ruff]
 line-length = 100
@@ -20,7 +21,7 @@ select = ["E", "F", "W", "I", "B", "UP", "SIM"]
 ignore = ["UP006", "UP007", "UP035", "UP045"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["apad"]
+known-first-party = ["pentaday"]
 
 [tool.ruff.format]
 quote-style = "double"

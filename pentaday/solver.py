@@ -5,8 +5,8 @@ import time
 from functools import cache
 from typing import Dict, Iterator, List, Tuple, Union
 
-from apad.ascii import render_ascii
-from apad.board import (
+from pentaday.ascii import render_ascii
+from pentaday.board import (
     COLS,
     PLAYABLE,
     ROWS,
@@ -17,7 +17,7 @@ from apad.board import (
     target_cells,
     targets_for_date,
 )
-from apad.pieces import PIECES, orientations
+from pentaday.pieces import PIECES, orientations
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ def solve_partial(
 
 
 def main(argv: Union[List[str], None] = None) -> None:
-    parser = argparse.ArgumentParser(description="Solve the A-Puzzle-A-Day calendar puzzle.")
+    parser = argparse.ArgumentParser(description="Solve the Pentaday calendar puzzle.")
     parser.add_argument(
         "--date", type=datetime.date.fromisoformat, help="YYYY-MM-DD (default today)"
     )

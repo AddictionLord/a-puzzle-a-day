@@ -5,8 +5,8 @@ from typing import Dict, List, Tuple
 import plotly.graph_objects as go
 import pytest
 
-from apad.board import PLAYABLE, target_cells
-from apad.game import (
+from pentaday.board import PLAYABLE, target_cells
+from pentaday.game import (
     NO_SOLUTION,
     GameState,
     execute,
@@ -14,8 +14,8 @@ from apad.game import (
     parse_targets,
     run_repl,
 )
-from apad.pieces import PIECES, orientations
-from apad.plot import PIECE_COLORS, TARGET_COLOR, board_figure
+from pentaday.pieces import PIECES, orientations
+from pentaday.plot import PIECE_COLORS, TARGET_COLOR, board_figure
 
 TARGETS = target_cells(11, 16, 4)
 

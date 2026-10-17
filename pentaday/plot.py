@@ -2,8 +2,8 @@ from typing import Dict, List
 
 import plotly.graph_objects as go
 
-from apad.board import COLS, LAYOUT, PLAYABLE, ROWS, Placements, Targets
-from apad.pieces import PIECES
+from pentaday.board import COLS, LAYOUT, PLAYABLE, ROWS, Placements, Targets
+from pentaday.pieces import PIECES
 
 CELL_PX = 72
 EMPTY_COLOR = "#f4efe6"
@@ -57,7 +57,7 @@ def board_figure(placements: Placements, targets: Targets) -> go.Figure:
     target_text = " ".join(str(LAYOUT[r][c]) for r, c in targets)
     figure = go.Figure()
     figure.update_layout(
-        title={"text": f"A-Puzzle-A-Day: {target_text}", "x": 0.5},
+        title={"text": f"Pentaday: {target_text}", "x": 0.5},
         shapes=shapes,
         annotations=annotations,
         width=COLS * CELL_PX + 40,

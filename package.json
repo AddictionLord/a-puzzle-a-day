@@ -1,5 +1,5 @@
 {
-  "name": "a-puzzle-a-day-web",
+  "name": "pentaday-web",
   "private": true,
   "scripts": {
     "test:web": "playwright test"

@@ -2,7 +2,7 @@ import datetime
 
 import pytest
 
-from apad.board import BLANK, LAYOUT, PLAYABLE, target_cells, targets_for_date
+from pentaday.board import BLANK, LAYOUT, PLAYABLE, target_cells, targets_for_date
 
 
 def test_playable_cell_count():

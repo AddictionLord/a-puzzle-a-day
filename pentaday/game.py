@@ -3,8 +3,8 @@ import datetime
 import sys
 from typing import Callable, Dict, Iterable, Iterator, List, TextIO, Tuple, Union
 
-from apad.ascii import render_ascii
-from apad.board import (
+from pentaday.ascii import render_ascii
+from pentaday.board import (
     LAYOUT,
     PLAYABLE,
     Cell,
@@ -14,9 +14,9 @@ from apad.board import (
     target_cells,
     targets_for_date,
 )
-from apad.pieces import PIECES, orientations
-from apad.plot import board_figure
-from apad.solver import solve_partial
+from pentaday.pieces import PIECES, orientations
+from pentaday.plot import board_figure
+from pentaday.solver import solve_partial
 
 HELP = """Commands:
   show                          print the board
@@ -102,8 +102,8 @@ def main(argv: Union[List[str], None] = None) -> None:
 
 def parse_targets(argv: Union[List[str], None] = None) -> Targets:
     parser = argparse.ArgumentParser(
-        prog="python -m apad.game",
-        description="Play A-Puzzle-A-Day: cover everything but the month, day and weekday.",
+        prog="python -m pentaday.game",
+        description="Play Pentaday: cover everything but the month, day and weekday.",
     )
     parser.add_argument(
         "--date",

@@ -5,8 +5,8 @@ import sys
 import time
 from typing import List, Tuple
 
-from apad.board import WEEKDAYS, target_cells
-from apad.solver import solve
+from pentaday.board import WEEKDAYS, target_cells
+from pentaday.solver import solve
 
 logger = logging.getLogger(__name__)
 

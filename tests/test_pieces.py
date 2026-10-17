@@ -1,8 +1,8 @@
 import pytest
 
-from apad.ascii import render_ascii
-from apad.board import target_cells
-from apad.pieces import PIECES, orientations
+from pentaday.ascii import render_ascii
+from pentaday.board import target_cells
+from pentaday.pieces import PIECES, orientations
 
 EXPECTED_ORIENTATIONS = {
     "F": 8,
