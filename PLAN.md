@@ -8,12 +8,12 @@
 
 | r\c | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 |---|---|---|---|---|---|---|---|---|---|
-| 0 | LED | ÚNO | BŘE | DUB | 1 | 2 | 3 | Po | Út |
-| 1 | KVĚ | 4 | 5 | 6 | 7 | 8 | 9 | St | · |
-| 2 | ČVN | 10 | 11 | 12 | 13 | **31** | 15 | Čt | · |
-| 3 | ČVC | 16 | 17 | 18 | 19 | 20 | 21 | Pá | So |
-| 4 | SRP | 22 | 23 | 24 | 25 | 26 | 27 | · | Ne |
-| 5 | ZÁŘ | ŘÍJ | LIS | PRO | 28 | 29 | 30 | **14** | ✗ |
+| 0 | JAN | FEB | MAR | APR | 1 | 2 | 3 | Mon | Tue |
+| 1 | MAY | 4 | 5 | 6 | 7 | 8 | 9 | Wed | · |
+| 2 | JUN | 10 | 11 | 12 | 13 | **31** | 15 | Thu | · |
+| 3 | JUL | 16 | 17 | 18 | 19 | 20 | 21 | Fri | Sat |
+| 4 | AUG | 22 | 23 | 24 | 25 | 26 | 27 | · | Sun |
+| 5 | SEP | OCT | NOV | DEC | 28 | 29 | 30 | **14** | ✗ |
 
 - `✗` (5,8) is the notch: not part of the board. In the photo it is **bottom-right**, not top-right.
 - `·` (1,8), (2,8), (4,7) are blank but playable: they must be covered.
@@ -28,14 +28,14 @@ Leave exactly **three** cells uncovered: month, day, weekday. 53 − 3 = 50 = 10
 
 10 distinct free pentominoes, rotation and reflection allowed: **F I L N P T U V Y Z** (W and X are absent).
 Identified from the photo; validated with a scratch solver: the board model is solvable for every one of
-60 random (month, day, weekday) triples, and 16 LIS Pá has 168 solutions.
+60 random (month, day, weekday) triples, and NOV 16 Fri has 168 solutions.
 
 Orientation counts (sanity test): F 8, I 2, L 8, N 8, P 8, T 4, U 4, V 4, Y 8, Z 4 → 58.
 
 ### Date
 
 Target = any (month, day, weekday) triple; default = today via `datetime.date.today()`.
-Note: 16 Nov 2026 is a Monday; Friday 16th is 16 Oct 2026 (ŘÍJ).
+Note: 16 Nov 2026 is a Monday; Friday 16th is 16 Oct 2026.
 
 ## 2. Solver algorithm
 
@@ -126,7 +126,7 @@ files and cannot conflict.
 3. `scripts/check_all_dates.py`: every month × day 1–31 × weekday (2604 triples) has at least one
    solution; reports min/median/max solve time.
 4. `tests/test_solver.py`: every returned solution covers all non-target cells exactly once and uses each
-   piece once; `count_solutions` for 16 LIS Pá == 168 (cross-checks the scratch solver).
+   piece once; `count_solutions` for NOV 16 Fri == 168 (cross-checks the scratch solver).
 
 ### Integration
 

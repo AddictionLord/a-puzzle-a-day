@@ -10,29 +10,29 @@ ROWS = 6
 COLS = 9
 
 MONTHS: List[str] = [
-    "LED",
-    "ÚNO",
-    "BŘE",
-    "DUB",
-    "KVĚ",
-    "ČVN",
-    "ČVC",
-    "SRP",
-    "ZÁŘ",
-    "ŘÍJ",
-    "LIS",
-    "PRO",
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
 ]
-WEEKDAYS: List[str] = ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"]
+WEEKDAYS: List[str] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 BLANK = ""
 
 LAYOUT: List[List[Union[str, None]]] = [
-    ["LED", "ÚNO", "BŘE", "DUB", "1", "2", "3", "Po", "Út"],
-    ["KVĚ", "4", "5", "6", "7", "8", "9", "St", BLANK],
-    ["ČVN", "10", "11", "12", "13", "31", "15", "Čt", BLANK],
-    ["ČVC", "16", "17", "18", "19", "20", "21", "Pá", "So"],
-    ["SRP", "22", "23", "24", "25", "26", "27", BLANK, "Ne"],
-    ["ZÁŘ", "ŘÍJ", "LIS", "PRO", "28", "29", "30", "14", None],
+    ["JAN", "FEB", "MAR", "APR", "1", "2", "3", "Mon", "Tue"],
+    ["MAY", "4", "5", "6", "7", "8", "9", "Wed", BLANK],
+    ["JUN", "10", "11", "12", "13", "31", "15", "Thu", BLANK],
+    ["JUL", "16", "17", "18", "19", "20", "21", "Fri", "Sat"],
+    ["AUG", "22", "23", "24", "25", "26", "27", BLANK, "Sun"],
+    ["SEP", "OCT", "NOV", "DEC", "28", "29", "30", "14", None],
 ]
 
 PLAYABLE: FrozenSet[Cell] = frozenset(

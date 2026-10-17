@@ -1,6 +1,6 @@
 # A-Puzzle-A-Day
 
-[![CI](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/ci.yml/badge.svg)](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/ci.yml)
+[![CI](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AddictionLord/a-puzzle-a-day/actions/workflows/ci.yml)
 
 A game and solver for a wooden calendar puzzle. Ten pentominoes go on a 6 × 9 board so that exactly three
 cells stay visible: today's **month**, **day** and **weekday**. There is a puzzle for every day of the year,
@@ -8,18 +8,15 @@ and every one of them has a solution.
 
 The repository has two parts:
 
-- a **browser game** in a single HTML file (English and Czech), with hints, an instant solver and a
-  solution counter;
+- a **browser game** in a single HTML file, with hints, an instant solver and a browser for every
+  solution;
 - a **Python package** with the same board model, a terminal game and an exact-cover solver.
 
-![Playing in the browser](docs/images/play-en.png)
+![Playing in the browser](docs/images/play.png)
 
 ## The puzzle
 
-<img src="docs/images/board-photo.jpg" alt="The wooden puzzle: Czech board with ten plywood pentominoes" width="560">
-
-The original is a laser-cut Czech board (months `LED … PRO`, weekdays `Po … Ne`). The web game also ships an
-English board with the same layout.
+The layout follows a laser-cut wooden calendar puzzle:
 
 | | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 |---|---|---|---|---|---|---|---|---|---|
@@ -49,16 +46,14 @@ loads its fonts from Google Fonts.
 - **Solve** completes the board from wherever you are, keeping your pieces.
 - **Find all solutions** enumerates every solution for the chosen date in about half a second. A
   slider (or ‹ ›) then steps through them on the board.
-- **EN / CS** switches the board labels and the interface. The choice is remembered; `index.html#cs` and
-  `index.html#en` open a specific language.
 
 <table>
   <tr>
-    <td><img src="docs/images/solved-cs-dark.png" alt="Solved board, Czech, dark theme"></td>
-    <td width="30%"><img src="docs/images/mobile-en.png" alt="Phone layout"></td>
+    <td><img src="docs/images/solved-dark.png" alt="Solved board, browsing solution 42 of 502, dark theme"></td>
+    <td width="30%"><img src="docs/images/mobile.png" alt="Phone layout"></td>
   </tr>
   <tr>
-    <td align="center">Czech board, dark theme</td>
+    <td align="center">Browsing all 502 solutions, dark theme</td>
     <td align="center">Phone layout</td>
   </tr>
 </table>
@@ -74,7 +69,7 @@ pip install -e ".[dev]"
 ```bash
 python -m apad.game                                  # today's date
 python -m apad.game --date 2026-10-16
-python -m apad.game --month 11 --day 16 --weekday 4  # LIS 16 Pá (Monday = 0)
+python -m apad.game --month 11 --day 16 --weekday 4  # NOV 16 Fri (Monday = 0)
 ```
 
 Commands: `show`, `pieces [NAME ...]` (orientations with their indices), `place F 3 2 4`
@@ -84,14 +79,14 @@ Commands: `show`, `pieces [NAME ...]` (orientations with their indices), `place 
 ```
 $ printf "hint\nsolve\nquit\n" | python -m apad.game --date 2026-10-16
 Try: place F 0 0 0
- F   F   L   L   L   L   U   U   U
- I   F   F   V   Z   L   U   N   U
- I   F   T   V   Z   Z   Z   N   N
- I  [16] T   V   V   V   Z  [Pá] N
- I   T   T   T   Y   P   P   P   N
- I  [ŘÍ] Y   Y   Y   Y   P   P
+  F     F     L     L     L     L     U     U     U
+  I     F     F     V     Z     L     U     N     U
+  I     F     T     V     Z     Z     Z     N     N
+  I    [16]   T     V     V     V     Z   [Fri]   N
+  I     T     T     T     Y     P     P     P     N
+  I   [OCT]   Y     Y     Y     Y     P     P
 
-Congratulations, the puzzle is solved for ŘÍJ 16 Pá!
+Congratulations, the puzzle is solved for OCT 16 Fri!
 ```
 
 ### Solver
@@ -130,8 +125,8 @@ only notices an unfillable hole late. The solver treats the puzzle as an **exact
 
 | Python 3.13 | first solution | all solutions |
 |---|---|---|
-| 16 LIS Pá | 10 ms | 168 in 1.1 s |
-| 16 ŘÍJ Pá | 4 ms | 502 in 2.1 s |
+| NOV 16 Fri | 10 ms | 168 in 1.1 s |
+| OCT 16 Fri | 4 ms | 502 in 2.1 s |
 | all 2 604 combinations | median 8 ms, max 111 ms | |
 
 The browser game runs the same search in JavaScript (lowest empty cell plus the region check) and counts all

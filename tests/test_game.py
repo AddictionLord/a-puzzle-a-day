@@ -49,13 +49,13 @@ SOLUTION: Dict[str, Tuple[int, int, int]] = _moves_from_grid(SOLUTION_GRID)
 
 @pytest.fixture
 def state() -> GameState:
-    """Empty game for LIS 16 Pá."""
+    """Empty game for NOV 16 Fri."""
     return GameState(TARGETS)
 
 
 @pytest.fixture
 def solved_state() -> GameState:
-    """Game for LIS 16 Pá with the known solution placed."""
+    """Game for NOV 16 Fri with the known solution placed."""
     game = GameState(TARGETS)
     for name, (orientation, row, col) in SOLUTION.items():
         game.place(name, orientation, row, col)
@@ -119,7 +119,7 @@ def test_place_offsets_normalized_origin(state: GameState) -> None:
         ([], ("I", 0, 5, 4), "notch"),
         ([("I", 0, 0, 0)], ("F", 0, 0, 2), "overlap piece I"),
         ([], ("I", 1, 0, 1), "target cell"),
-        ([], ("I", 0, 3, 3), "Pá"),
+        ([], ("I", 0, 3, 3), "Fri"),
     ],
 )
 def test_place_invalid(
@@ -157,7 +157,7 @@ def test_execute_show_and_reset(state: GameState) -> None:
     """Show prints the target and board; reset clears it."""
     execute(state, "place I 0 0 0")
     output, _ = execute(state, "show")
-    assert output.startswith("Target: LIS 16 Pá")
+    assert output.startswith("Target: NOV 16 Fri")
     assert output.count("I") >= 5
     execute(state, "reset")
     assert state.placements == {}
@@ -260,7 +260,7 @@ def test_board_figure_empty() -> None:
     assert sorted((int(s.y0), int(s.x0)) for s in highlighted) == sorted(TARGETS)
     assert not any(s.x0 == 8 and s.y0 == 5 for s in figure.layout.shapes)
     texts = {a.text for a in figure.layout.annotations}
-    assert {"LED", "ÚNO", "31", "14", "Ne"} <= texts
+    assert {"JAN", "FEB", "31", "14", "Sun"} <= texts
     assert figure.layout.yaxis.scaleanchor == "x"
 
 
