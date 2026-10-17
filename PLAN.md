@@ -1,4 +1,4 @@
-# A-Puzzle-A-Day: plan
+# Pentaday: plan
 
 ## 1. Problem model
 
@@ -54,7 +54,7 @@ piece × orientation × position and only discovers dead holes late. Use cell-fi
 ## 3. Repository layout
 
 ```
-apad/
+pentaday/
     __init__.py
     board.py      # step 0: layout, labels, Cell type, target_cells(month, day, weekday)
     pieces.py     # step 0: piece shapes, orientations(name)
@@ -111,17 +111,17 @@ files and cannot conflict.
 1. `GameState(targets)`: `place(name, orientation, row, col)`, `remove(name)`, `reset()`,
    `is_solved()`, `remaining_pieces()`. `place` raises `ValueError` for: unknown or already placed
    piece, out of board / notch, overlap, covering a target cell.
-2. `apad/plot.py`: plotly figure of the board with labels, pieces colored, targets highlighted.
-3. Interactive CLI `python -m apad.game [--date YYYY-MM-DD | --month M --day D --weekday W]`;
+2. `pentaday/plot.py`: plotly figure of the board with labels, pieces colored, targets highlighted.
+3. Interactive CLI `python -m pentaday.game [--date YYYY-MM-DD | --month M --day D --weekday W]`;
    commands: `show`, `pieces` (print each remaining piece's orientations with their indices),
    `place F 3 2 4`, `remove F`, `reset`, `plot`, `quit`.
 4. `tests/test_game.py`: each invalid move raises; placing a known solution yields `is_solved()`.
 
 ### Agent B: `feat/solver`
 
-1. `apad/solver.py`: placement precomputation, bitmask Algorithm X with MRV and region pruning;
+1. `pentaday/solver.py`: placement precomputation, bitmask Algorithm X with MRV and region pruning;
    `solve(targets, limit: Union[int, None] = 1) -> List[Placements]`, `count_solutions(targets) -> int`.
-2. CLI `python -m apad.solver [--date ... | --month --day --weekday] [--limit N | --all] [--count]`,
+2. CLI `python -m pentaday.solver [--date ... | --month --day --weekday] [--limit N | --all] [--count]`,
    prints solutions with `render_ascii`.
 3. `scripts/check_all_dates.py`: every month × day 1–31 × weekday (2604 triples) has at least one
    solution; reports min/median/max solve time.

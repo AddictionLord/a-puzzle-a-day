@@ -2,9 +2,9 @@ from typing import FrozenSet, List, Tuple
 
 import pytest
 
-from apad.board import PLAYABLE, Cell, Placements, Targets, target_cells
-from apad.pieces import PIECES
-from apad.solver import count_solutions, solve, solve_partial
+from pentaday.board import PLAYABLE, Cell, Placements, Targets, target_cells
+from pentaday.pieces import PIECES
+from pentaday.solver import count_solutions, solve, solve_partial
 
 LIS_16_PA = target_cells(11, 16, 4)
 
