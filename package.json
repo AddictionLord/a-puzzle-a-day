@@ -1,0 +1,10 @@
+{
+  "name": "a-puzzle-a-day-web",
+  "private": true,
+  "scripts": {
+    "test:web": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1"
+  }
+}
