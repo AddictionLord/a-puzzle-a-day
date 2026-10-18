@@ -1,8 +1,8 @@
 # Pentaday
 
-[![CI](https://github.com/AddictionLord/pentaday/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AddictionLord/pentaday/actions/workflows/ci.yml)
-[![Pages](https://github.com/AddictionLord/pentaday/actions/workflows/pages.yml/badge.svg?branch=main)](https://addictionlord.github.io/pentaday/)
-[![Release](https://img.shields.io/github/v/release/AddictionLord/pentaday)](https://github.com/AddictionLord/pentaday/releases)
+[![CI](https://github.com/marekprovaznik/pentaday/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/marekprovaznik/pentaday/actions/workflows/ci.yml)
+[![Pages](https://github.com/marekprovaznik/pentaday/actions/workflows/pages.yml/badge.svg?branch=main)](https://marekprovaznik.github.io/pentaday/)
+[![Release](https://img.shields.io/github/v/release/marekprovaznik/pentaday)](https://github.com/marekprovaznik/pentaday/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 A game and solver for a wooden calendar puzzle. Ten pentominoes go on a 6 × 9 board so that exactly three
@@ -18,7 +18,7 @@ The repository has two parts:
   solution;
 - a **Python package** with the same board model, a terminal game and an exact-cover solver.
 
-**[▶ Play online](https://addictionlord.github.io/pentaday/)**
+**[▶ Play online](https://marekprovaznik.github.io/pentaday/)**
 
 ![Playing in the browser](docs/images/play.png)
 
@@ -43,7 +43,7 @@ The layout follows a laser-cut wooden calendar puzzle:
 
 ## Play in the browser
 
-Play at **[addictionlord.github.io/pentaday](https://addictionlord.github.io/pentaday/)**, or open
+Play at **[marekprovaznik.github.io/pentaday](https://marekprovaznik.github.io/pentaday/)**, or open
 [`web/index.html`](web/index.html) locally in any modern browser. Nothing to build or install; the page only
 loads its fonts from Google Fonts.
 

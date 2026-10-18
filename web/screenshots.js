@@ -82,7 +82,7 @@ p { font-size: 32px; line-height: 1.35; margin: 0 0 32px; color: #3c443d; }
 img { width: 100%; filter: drop-shadow(0 18px 24px rgba(40, 28, 12, 0.25)); }
 </style></head><body>
 <div><h1>Pentaday</h1><p>Ten pentominoes. Leave only today's date showing. Every day has a solution.</p>
-<div class="url">addictionlord.github.io/pentaday</div></div>
+<div class="url">marekprovaznik.github.io/pentaday</div></div>
 <img src="data:image/png;base64,${boardPng}" alt="">
 </body></html>`;
 }
